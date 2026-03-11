@@ -33,6 +33,8 @@ def get_appointment(appointment_id: int, db: Session = Depends(get_db)):
 def get_appointments(
     user_id: int | None = None,
     date: str | None = None,
+    limit: int = 10,
+    offset: int = 0,
     db: Session = Depends(get_db),
 ):
     query = db.query(models.Appointment)
@@ -43,7 +45,7 @@ def get_appointments(
     if date:
         query = query.filter(models.Appointment.date == date)
 
-    return query.all()
+    return query.offset(offset).limit(limit).all()
 
 
 @router.delete("/{appointment_id}")
