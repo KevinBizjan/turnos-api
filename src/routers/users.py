@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from ..database import get_db
 from .. import models, schemas, auth
+from src.utils.security import hash_password, verify_password
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -11,7 +12,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if db.query(models.User).filter(models.User.email == user.email).first():
         raise HTTPException(status_code=400, detail="Email ya registrado")
-    hashed = auth.get_password_hash(user.password)
+    hashed = hash_password(user.password)
     db_user = models.User(email=user.email, password=hashed, role=user.role or "user")
     db.add(db_user)
     db.commit()
@@ -29,7 +30,7 @@ def login(
     if not db_user:
         raise HTTPException(status_code=400, detail="Usuario no encontrado")
 
-    if not auth.verify_password(form_data.password, db_user.password):
+    if not verify_password(form_data.password, db_user.password):
         raise HTTPException(status_code=400, detail="Password incorrecto")
 
     token = auth.create_access_token({"sub": db_user.email})
