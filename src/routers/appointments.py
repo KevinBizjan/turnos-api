@@ -30,17 +30,30 @@ def get_appointment(appointment_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[schemas.AppointmentResponse])
-def list_appointments(
+def get_appointments(
     user_id: int | None = None,
-    business_id: int | None = None,
-    from_date: date | None = None,
+    date: str | None = None,
     db: Session = Depends(get_db),
 ):
-    q = db.query(models.Appointment)
-    if user_id is not None:
-        q = q.filter(models.Appointment.user_id == user_id)
-    if business_id is not None:
-        q = q.filter(models.Appointment.business_id == business_id)
-    if from_date is not None:
-        q = q.filter(models.Appointment.date >= from_date)
-    return q.all()
+    query = db.query(models.Appointment)
+
+    if user_id:
+        query = query.filter(models.Appointment.user_id == user_id)
+
+    if date:
+        query = query.filter(models.Appointment.date == date)
+
+    return query.all()
+
+
+@router.delete("/{appointment_id}")
+def delete_appointment(appointment_id: int, db: Session = Depends(get_db)):
+    appointment = db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
+
+    if not appointment:
+        return {"error": "Appointment not found"}
+
+    db.delete(appointment)
+    db.commit()
+
+    return {"message": "Appointment deleted"}
