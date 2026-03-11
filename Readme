@@ -1,0 +1,183 @@
+Turnos API
+==========
+
+API REST para la gestión de turnos desarrollada con FastAPI. Permite:
+
+Registrar y consultar usuarios.
+Autenticarse mediante JWT.
+Crear, listar (con filtros y paginación), consultar por id y eliminar turnos.
+Trabajar con PostgreSQL como base de datos y Alembic para las migraciones.
+
+El proyecto está dockerizado y puede desplegarse en Render u otros proveedores.
+
+Tecnologías
+-----------
+
+Python
+FastAPI
+PostgreSQL
+Alembic (migraciones)
+Docker / Docker Compose
+JWT (autenticación)
+Swagger / OpenAPI
+
+Deploy
+------
+
+API online:
+
+- `https://turnos-api-qa1c.onrender.com`
+
+Documentación interactiva:
+
+- `https://turnos-api-qa1c.onrender.com/docs`
+
+Ejecución local
+---------------
+
+Clonar el repositorio:
+
+```bash
+git clone https://github.com/KevinBizjan/turnos-api.git
+cd turnos-api
+```
+
+Levantar el entorno con Docker:
+
+```bash
+docker compose up --build
+```
+
+La API quedará disponible en:
+
+- `http://localhost:8000`
+
+Documentación:
+
+- `http://localhost:8000/docs`
+
+Si preferís correrlo sin Docker, asegurate de tener PostgreSQL levantado, configurar las variables de entorno de conexión y luego:
+
+```bash
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn main:app --reload
+```
+
+Endpoints principales
+---------------------
+
+### Usuarios
+
+**Crear usuario**  
+`POST /api/users/`
+
+Body de ejemplo:
+
+```json
+{
+  "email": "test@test.com",
+  "password": "123456",
+  "role": "user"
+}
+```
+
+**Login**  
+`POST /api/users/login`
+
+Formato `application/x-www-form-urlencoded`:
+
+```text
+username: test@test.com
+password: 123456
+```
+
+Respuesta:
+
+```json
+{
+  "access_token": "TOKEN",
+  "token_type": "bearer"
+}
+```
+
+El token debe enviarse en el header:
+
+```text
+Authorization: Bearer TOKEN
+```
+
+**Listar usuarios**  
+`GET /api/users/`
+
+Devuelve el listado completo de usuarios registrados.
+
+### Turnos
+
+**Crear turno**  
+`POST /api/appointments/`
+
+Body de ejemplo:
+
+```json
+{
+  "user_id": 1,
+  "business_id": 1,
+  "date": "2026-03-10",
+  "status": "pending"
+}
+```
+
+**Obtener turno por id**  
+`GET /api/appointments/{id}`
+
+Ejemplo:
+
+- `GET /api/appointments/3`
+
+**Listar turnos (con filtros y paginación)**  
+`GET /api/appointments/`
+
+Parámetros opcionales:
+
+- `user_id`: filtra por usuario.
+- `date`: filtra por fecha exacta (`YYYY-MM-DD`).
+- `limit`: cantidad máxima de registros a devolver (por defecto 10).
+- `offset`: desplazamiento para paginación (por defecto 0).
+
+Ejemplos:
+
+- `GET /api/appointments`
+- `GET /api/appointments?user_id=1`
+- `GET /api/appointments?date=2026-03-12`
+- `GET /api/appointments?user_id=1&date=2026-03-12&limit=5&offset=0`
+
+**Eliminar turno**  
+`DELETE /api/appointments/{id}`
+
+Ejemplo:
+
+- `DELETE /api/appointments/3`
+
+Migraciones con Alembic
+-----------------------
+
+Las migraciones de base de datos se manejan con Alembic. Algunos comandos útiles:
+
+```bash
+# Generar una nueva migración (autogenerada)
+alembic revision --autogenerate -m "mensaje de la migración"
+
+# Aplicar todas las migraciones pendientes
+alembic upgrade head
+
+# Revertir la última migración
+alembic downgrade -1
+```
+
+Notas
+-----
+
+La autenticación con JWT protege los endpoints sensibles.
+Docker simplifica el entorno de ejecución junto con PostgreSQL.
+Swagger (`/docs`) facilita probar y documentar la API.
