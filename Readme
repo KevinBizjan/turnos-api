@@ -1,5 +1,4 @@
 Turnos API
-==========
 
 API REST para la gestión de turnos desarrollada con FastAPI. Permite:
 
@@ -11,7 +10,6 @@ Trabajar con PostgreSQL como base de datos y Alembic para las migraciones.
 El proyecto está dockerizado y puede desplegarse en Render u otros proveedores.
 
 Tecnologías
------------
 
 Python
 FastAPI
@@ -22,7 +20,6 @@ JWT (autenticación)
 Swagger / OpenAPI
 
 Deploy
-------
 
 API online:
 
@@ -33,7 +30,6 @@ Documentación interactiva:
 - `https://turnos-api-qa1c.onrender.com/docs`
 
 Ejecución local
----------------
 
 Clonar el repositorio:
 
@@ -65,7 +61,6 @@ uvicorn main:app --reload
 ```
 
 Endpoints principales
----------------------
 
 ### Usuarios
 
@@ -160,7 +155,6 @@ Ejemplo:
 - `DELETE /api/appointments/3`
 
 Migraciones con Alembic
------------------------
 
 Las migraciones de base de datos se manejan con Alembic. Algunos comandos útiles:
 
@@ -176,7 +170,6 @@ alembic downgrade -1
 ```
 
 Notas
------
 
 La autenticación con JWT protege los endpoints sensibles.
 Docker simplifica el entorno de ejecución junto con PostgreSQL.
